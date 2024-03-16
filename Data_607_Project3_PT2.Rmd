@@ -155,7 +155,6 @@ all_data <- all_data %>%
 ```{r remove_columns}
 #remove unused columns
 all_data <- dplyr::select(all_data, -c('last_status','got_summary','got_ner','is_being_worked','first_seen'))
-view(all_data)
 ```
 
 ```{r separate-job-skills}
