@@ -134,6 +134,7 @@ Error Code: 3948. Loading local data is disabled; this must be enabled on both t
 This error requires enabling permissions via multiple sources and will need further exploration. 
 
 Due to the issues issues face, we decided to take the approach of using a combined CSV file:
+
 ### Combine all three dataset in one csv file before loading
 
 ```{r read-csv-file, message = FALSE}
