@@ -175,7 +175,7 @@ all_data$group_title= ifelse(grepl("*data engineer*", all_data$job_title, ignore
 
 ```
 
-### Analysis
+## Analysis
 
 ## What skills are the most common for data scientist?
   
