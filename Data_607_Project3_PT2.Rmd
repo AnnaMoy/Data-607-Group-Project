@@ -121,15 +121,9 @@ Our group faced a few errors (show below) when attempting to load the datasets i
 
 Error Code: 1290. The MySQL server is running with the --secure-file-priv option so it cannot execute this statement
 
-This was resolved adding LOCAL into the LOAD DATA INFILE query:
-```{r load_data_infile,  eval=FALSE}
-LOAD DATA INFILE 'C:\Program Files\MySQL\MySQL Server 8.0\job_postings_revised.csv' INTO TABLE job_postings
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\r\n'
-IGNORE 1 ROWS
-```
+This was resolved adding LOCAL into the LOAD DATA INFILE query.
 
-Error Code: 3948. Loading local data is disabled; this must be enabled on both the client and server sides
+Error Code: 3948. Loading local data is disabled; this must be enabled on both the client and server sides.
 
 This error requires enabling permissions via multiple sources and will need further exploration. 
 
