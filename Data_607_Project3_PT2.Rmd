@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Which are the most valued data science skills? 
 
-Our team collaborated together to find data that supports the skills that are needed for data science. There were a few datasets we explored and we felt the Data Science Job Postings & skills had a lot of good data for us to analyze and tidy up. Our team was able to collaborate effectively through Slack, Google doc, and Zoom. We were able to share our code in Github. 
+Our team collaborated together to find data that supports the skills that are needed for data science. There were a few datasets we explored and we felt the Data Science Job Postings & skills had a lot of good data for us to analyze and tidy up. Our team was able to collaborate effectively through Slack, Google doc, and Zoom. For project documentation and code sharing, we used Github. 
 
 The dataset we used is from  [Kaggle - Data Science Job Postings & Skills (2024)](https://www.kaggle.com/datasets/asaniczka/data-science-job-postings-and-skills) which contains jobs and the job skills that are needed for those roles. 
 
