@@ -123,7 +123,7 @@ Error Code: 1290. The MySQL server is running with the --secure-file-priv option
 
 This was resolved adding LOCAL into the LOAD DATA INFILE query:
 ```{r load_data_infile_local,  eval=FALSE}
-LOAD DATA INFILE 'C:\Program Files\MySQL\MySQL Server 8.0\job_postings_revised.csv' INTO TABLE job_postings
+LOAD DATA LOCAL INFILE 'C:\Program Files\MySQL\MySQL Server 8.0\job_postings_revised.csv' INTO TABLE job_postings
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\r\n'
 IGNORE 1 ROWS
