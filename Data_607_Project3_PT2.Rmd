@@ -44,7 +44,7 @@ library(RMySQL)
 
 The first approach was to load multiple CSV files into MySQL, for a total of four tables: country, job_level, job_postings, and job_skills.
 
-```{r import_sql_database}
+```{r import_sql_database, eval=FALSE, message=FALSE}
 #importing country table 
 mysqlconnection = dbConnect(RMySQL::MySQL(),
                             dbname= 'natalie.kalukeerthie02',
