@@ -152,6 +152,12 @@ all_data <- all_data %>%
          last_processed_time = hms::as_hms(last_processed_time))
 ```
 
+```{r remove_columns}
+#remove unused columns
+all_data <- dplyr::select(all_data, -c('last_status','got_summary','got_ner','is_being_worked','first_seen'))
+view(all_data)
+```
+
 ```{r separate-job-skills}
 # separate job skills into one column
 all_data <- separate_rows(all_data, job_skills, sep = ",")
