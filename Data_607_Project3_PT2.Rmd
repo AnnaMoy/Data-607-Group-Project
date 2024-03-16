@@ -42,7 +42,7 @@ library(RMySQL)
 
 ### Importing Data through MySQL Database
 
-The first approach was to load multiple CSV files into MySQL, for a total of four tables: country, job_level, job_postings, and job_skills.
+The first approach was to load multiple CSV files into MySQL, for a total of four tables: country, job_level, job_postings, and job_skills. 
 
 ```{r import_sql_database, eval=FALSE, message=FALSE}
 #importing country table 
@@ -197,6 +197,8 @@ ggplot(data_scientist, aes(x = reorder(job_skills, n), n, fill = job_skills)) +
   ylab("# of counts")
 ```
 
+Based on the visual, Python and SQL appear the be the most common skills for Data Scientists.
+
 ## What skills do data scientist need in different countries?
 ``` {r filter by location,figures-side, fig.show="hold", out.width="50%", echo = FALSE}
 # filter out data scientist job titles and top 10 job skills in United States
@@ -261,7 +263,12 @@ ggplot(data_countryUK, aes(x = reorder(job_skills, n), n, fill = job_skills)) +
   ylab("# of counts")
 ```
 
-Group job titles into a bucket and determine the most common skills they need to have
+For Australia, the United States, and the United Kingdom, Python is the most requested skill for Data Scientists, while in Canada, Machine Learning is the most requested skill.
+
+
+
+To look at a few relevant roles (data engineer, data analyst, and machine learning roles) more closely, we grouped job titles into a bucket and determined the most common skills they need to have:
+
 ```{r group_title, message = FALSE}
 job_grouping <- all_data %>%
   group_by(group_title) %>%
@@ -298,15 +305,18 @@ job_grouping_ml <- all_data %>%
 
 ggplot(job_grouping_ml, aes(x = reorder(job_skills,n),n,job_skills, fill = job_skills)) +
   geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Data Engineer Job Skills Needed") +
+  labs(title = "Machine Learning Job Skills Needed") +
    xlab("Job Skills") +
    ylab("# of counts")
 ```
+
+For Data Engineers and Machine Learning positions, Python is the most requested skill. For Data Analysts, SQL is the most common. 
 
 ## What are the skills for data scientist depending on their seniority level?
 
 ```{r seniority_level}
 seniority_assoc <- all_data %>%
+  filter(group_title =="data scientist") %>%
   filter(job_level == "Associate") %>%
   select(job_level, job_skills) %>%
   count(job_skills)%>%
@@ -314,6 +324,7 @@ seniority_assoc <- all_data %>%
   head(10)
 
 seniority_mid <- all_data %>%
+  filter(group_title =="data scientist") %>%
   filter(job_level == "Mid senior") %>%
   select(job_level, job_skills) %>%
   count(job_skills)%>%
@@ -323,6 +334,8 @@ seniority_mid <- all_data %>%
 seniority_assoc
 seniority_mid
 ```
+
+Based on seniority level, the most common skill for associate data scientists is SQL, while for mid-senior level it is Python.
 
 ## Top 30 job skills 
 
@@ -338,3 +351,9 @@ wordcloud(
   max.words = 30,
   colors = "blue")
 ```
+
+We created a word cloud to give a simpler view on which skills are most asked for by employers. The top skills are Python and SQL, followed by communication. 
+
+## ConClusion
+
+Based on our analysis and findings, we believe that the most valued data science skills are Python, SQL, and Machine Learning.
