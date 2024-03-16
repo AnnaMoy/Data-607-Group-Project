@@ -354,6 +354,6 @@ wordcloud(
 
 We created a word cloud to give a simpler view on which skills are most asked for by employers. The top skills are Python and SQL, followed by communication. 
 
-## ConClusion
+## Conclusion
 
 Based on our analysis and findings, we believe that the most valued data science skills are Python, SQL, and Machine Learning.
