@@ -24,11 +24,11 @@ Our approach for this project was to analyze the data and determine the job skil
 
 We came up with a few questions we wanted to answer based on the data obtained. 
 
-* What skills are the most common for data scientist?
+* What skills are the most common for data scientists?
 
-* What skills are needed for data scientist at different countries?
+* What skills are needed for data scientists at different countries?
 
-* What skills are needed for data scientist depending on their level of seniority?
+* What skills are needed for data scientists depending on their level of seniority?
 
 
 ### Load libraries
@@ -38,6 +38,7 @@ library(tidyverse)
 library(lubridate)
 library(wordcloud)
 library(RMySQL)
+library(dplyr)
 ```
 
 ### Importing Data through MySQL Database
@@ -117,7 +118,7 @@ LINES TERMINATED BY '\r\n'
 IGNORE 1 ROWS
 ```
 
-Our group faced a few errors (show below) when attempting to load the datasets in, mainly these errors revolved around MySQL Workbench's security protocols set in place over the last few years, which require granting certain permissions:
+Our group faced a few errors (show below) when attempting to load the data sets in, mainly these errors revolved around MySQL Workbench's security protocols set in place over the last few years, which require granting certain permissions:
 
 Error Code: 1290. The MySQL server is running with the --secure-file-priv option so it cannot execute this statement
 
@@ -133,7 +134,7 @@ Error Code: 3948. Loading local data is disabled; this must be enabled on both t
 
 This error requires enabling permissions via multiple sources and will need further exploration. 
 
-Due to the issues issues face, we decided to take the approach of using a combined CSV file:
+Due to the issues face, we decided to take the approach of using a combined CSV file:
 
 ### Combine all three dataset in one csv file before loading
 
