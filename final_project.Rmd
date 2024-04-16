@@ -1,0 +1,115 @@
+---
+title: "Data 607 Final Project"
+author: "Natalie Kalukeerthie, Anna Moy, Bishoy Sokkar"
+
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+As the movie and entertainment industry have a large impact on today’s pop culture, we’re intrigued to see how successful certain movies were over the years. We will be delving into the gross income of a variety of movies in order to find which movie has the highest gross income. 
+
+We will also dig a bit deeper to see what movies were most successful via different categories (all time, by a specific year, genre etc).  
+
+Our datasets will be coming from Kaggle: [Movie Industry](https://www.kaggle.com/datasets/danielgrijalvas/movies) and through web scraping on [Box Office Mojo](https://www.boxofficemojo.com/year/2020/). 
+
+Our team used slack, discord and github in order to collaborate effectively.
+
+# Data Collection
+``` {r load library, message = FALSE}
+#load library
+library(tidyverse)
+library(rvest)
+library(lubridate)
+```
+
+```{r read-csv-file, message = FALSE}
+#read csv file from kaggle
+movie <- read_csv("https://raw.githubusercontent.com/AnnaMoy/Data-607-Project/main/movies.csv")
+movie
+```
+
+```{r scrape-movie}
+# Webscraping
+# link to the website
+url <- "https://www.boxofficemojo.com/year/2020/"
+
+# read url link 
+webpage <- read_html(url)
+
+# pull in gross data from 2020
+gross_2020 <- html_nodes(webpage, ".mojo-field-type-date , .mojo-estimatable , .mojo-cell-wide") %>%
+  html_text()
+
+# put into dataframe for total gross and average
+df <- data.frame(gross = gross_2020)
+
+# split up the data into their own columns
+df <- df %>%
+  mutate(ind = rep(c("title", "gross_data", "total_gross","date"),length.out = n())) %>%
+  group_by(ind) %>%
+  mutate(id = row_number()) %>%
+  spread(ind, gross) %>%
+  select(-id)
+
+#remove line 1
+moviedf <- df[-1,]
+moviedf
+```
+
+# Data Transformation
+```{r data-transformation}
+# get the release date in kaggle movie dataset
+movie<- movie %>% separate_wider_delim(released, delim =" (", names= c("date","location"))
+
+#convert release date into date format
+movie$date <- mdy(movie$date)
+
+#add in year and quarter
+movie<-movie %>%
+  mutate(qtr= quarter(date,with_year = T))
+
+movie
+```
+# Analysis
+```{r join-scrap_data-kaggle_data}
+#joining the data for kaggle movie and scraped data
+movie2020 <-inner_join(movie, moviedf, by=c("name" = "title"))
+movie2020
+```
+
+# Statistical Analysis
+Research Question: Is there a difference between action and horror genre and their average gross?
+
+Null Hypothesis: H0: mean1 = mean2
+Alternative Hypothesis: HA: mean1 != mean2
+
+Reject the Null Hypothesis since p-value is less than .05.
+
+```{r statistical-analysis}
+# mean, sd and n for action and horror genre
+stat_genre <- movie %>%
+  filter(genre == "Action" | genre == "Horror") %>%
+  group_by(genre) %>%
+  summarize(mean = mean(gross, na.rm=T), sd = sd(gross, na.rm = T), n = n())
+stat_genre
+
+# genre for action and horror genre
+genre_act_hor<- movie %>%
+  filter(genre == "Action" | genre == "Horror") %>%
+  filter(!is.na(gross))
+genre_act_hor
+
+#T Test 
+t.test(gross ~ genre, data = genre_act_hor)
+
+#boxplot for horror and action genre
+ggplot(genre_act_hor, aes(genre, gross)) +
+  geom_boxplot() 
+```
+
+# Conclusion (include challenges faced)
