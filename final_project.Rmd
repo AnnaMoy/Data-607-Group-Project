@@ -64,6 +64,8 @@ moviedf <- df[-1,]
 moviedf
 ```
 
+We decided to get out send dataset through web-scraping. By using the function html_nodes(), we pulled in gross movie data for 2020 from https://www.boxofficemojo.com/year/2020/
+
 # Data Transformation
 ```{r data-transformation}
 # get the release date in kaggle movie dataset
