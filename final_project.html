@@ -243,6 +243,9 @@ function html_nodes(), we pulled in gross movie data for 2020 from <a href="http
 </div>
 <div id="data-transformation" class="section level1">
 <h1>Data Transformation</h1>
+<p>The originally scraped data is not in a useable format, so we must
+transform it into wide data so that we will have a unique value in the
+first column (date)</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># split up the data into their own columns</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ind =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;title&quot;</span>, <span class="st">&quot;gross_data&quot;</span>, <span class="st">&quot;total_gross&quot;</span>,<span class="st">&quot;date&quot;</span>),<span class="at">length.out =</span> <span class="fu">n</span>())) <span class="sc">%&gt;%</span></span>

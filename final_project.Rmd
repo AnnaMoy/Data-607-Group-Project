@@ -14,7 +14,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-As the movie and entertainment industry have a large impact on today’s pop culture, we’re intrigued to see how successful certain movies were over the years. We will be delving into the gross income of a variety of movies in order to find which movie has the highest gross income. 
+During the year of 2020, the world went into lock down, many people were forced to stay home, thus having the time and space to consume more media than ever before.
+
+We could see movies being a popular source of entertainment during both during the peak of lock down (Spring/Summer 2020) where people watched many movies in their howes and once restrictions were eased and people were allowed to finally congregate in public spaces again.
+
+As the movie and entertainment industry have a large impact on today’s pop culture, we’re intrigued to see how successful certain movies were over the years, especially in 2020. We will also be delving into the gross income of a variety of movies in order to find which movie has the highest gross income. 
 
 We will also dig a bit deeper to see what movies were most successful via different categories (all time, by a specific year, genre etc).  
 
@@ -95,6 +99,7 @@ movie
 movie2020 <-inner_join(movie, moviedf, by=c("name" = "title"))
 movie2020
 ```
+
 
 # Statistical Analysis
 Research Question: Is there a difference between action and horror genre and their average gross?
