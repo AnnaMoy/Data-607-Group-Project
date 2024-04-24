@@ -51,6 +51,16 @@ gross_2020 <- html_nodes(webpage, ".mojo-field-type-date , .mojo-estimatable , .
 # put into dataframe for total gross and average
 df <- data.frame(gross = gross_2020)
 
+head(df,20)
+```
+
+We decided to get out send dataset through web-scraping. By using the function html_nodes(), we pulled in gross movie data for 2020 from https://www.boxofficemojo.com/year/2020/ 
+
+# Data Transformation
+
+The originally scraped data is not in a useable format, so we must transform it into wide data so that we will have a unique value in the first column (date)
+```{r data-transformation-webscrape}
+
 # split up the data into their own columns
 df <- df %>%
   mutate(ind = rep(c("title", "gross_data", "total_gross","date"),length.out = n())) %>%
@@ -62,11 +72,9 @@ df <- df %>%
 #remove line 1
 moviedf <- df[-1,]
 moviedf
+
 ```
 
-We decided to get out send dataset through web-scraping. By using the function html_nodes(), we pulled in gross movie data for 2020 from https://www.boxofficemojo.com/year/2020/
-
-# Data Transformation
 ```{r data-transformation}
 # get the release date in kaggle movie dataset
 movie<- movie %>% separate_wider_delim(released, delim =" (", names= c("date","location"))

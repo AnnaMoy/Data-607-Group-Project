@@ -216,17 +216,44 @@ effectively.</p>
 <span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co"># put into dataframe for total gross and average</span></span>
 <span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">gross =</span> gross_2020)</span>
 <span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a></span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co"># split up the data into their own columns</span></span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ind =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;title&quot;</span>, <span class="st">&quot;gross_data&quot;</span>, <span class="st">&quot;total_gross&quot;</span>,<span class="st">&quot;date&quot;</span>),<span class="at">length.out =</span> <span class="fu">n</span>())) <span class="sc">%&gt;%</span></span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>  <span class="fu">group_by</span>(ind) <span class="sc">%&gt;%</span></span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>  <span class="fu">spread</span>(ind, gross) <span class="sc">%&gt;%</span></span>
-<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>id)</span>
-<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a></span>
-<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#remove line 1</span></span>
-<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>moviedf <span class="ot">&lt;-</span> df[<span class="sc">-</span><span class="dv">1</span>,]</span>
-<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>moviedf</span></code></pre></div>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="fu">head</span>(df,<span class="dv">20</span>)</span></code></pre></div>
+<pre><code>##                      gross
+## 1    Release\n            
+## 2                    Gross
+## 3              Total Gross
+## 4             Release Date
+## 5        Bad Boys for Life
+## 6             $204,417,855
+## 7             $206,305,244
+## 8                   Jan 17
+## 9                     1917
+## 10            $157,901,466
+## 11            $159,227,644
+## 12                  Dec 25
+## 13      Sonic the Hedgehog
+## 14            $146,066,470
+## 15            $148,974,665
+## 16                  Feb 14
+## 17 Jumanji: The Next Level
+## 18            $124,736,710
+## 19            $320,314,960
+## 20                  Dec 13</code></pre>
+<p>We decided to get out send dataset through web-scraping. By using the
+function html_nodes(), we pulled in gross movie data for 2020 from <a href="https://www.boxofficemojo.com/year/2020/" class="uri">https://www.boxofficemojo.com/year/2020/</a></p>
+</div>
+<div id="data-transformation" class="section level1">
+<h1>Data Transformation</h1>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># split up the data into their own columns</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ind =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;title&quot;</span>, <span class="st">&quot;gross_data&quot;</span>, <span class="st">&quot;total_gross&quot;</span>,<span class="st">&quot;date&quot;</span>),<span class="at">length.out =</span> <span class="fu">n</span>())) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="fu">group_by</span>(ind) <span class="sc">%&gt;%</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="fu">spread</span>(ind, gross) <span class="sc">%&gt;%</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>id)</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#remove line 1</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>moviedf <span class="ot">&lt;-</span> df[<span class="sc">-</span><span class="dv">1</span>,]</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>moviedf</span></code></pre></div>
 <pre><code>## # A tibble: 200 × 4
 ##    date   gross_data   title                                         total_gross
 ##    &lt;chr&gt;  &lt;chr&gt;        &lt;chr&gt;                                         &lt;chr&gt;      
@@ -241,20 +268,17 @@ effectively.</p>
 ##  9 Feb 28 $64,914,050  The Invisible Man                             $70,410,000
 ## 10 Feb 21 $62,342,368  The Call of the Wild                          $62,342,368
 ## # ℹ 190 more rows</code></pre>
-</div>
-<div id="data-transformation" class="section level1">
-<h1>Data Transformation</h1>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># get the release date in kaggle movie dataset</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>movie<span class="ot">&lt;-</span> movie <span class="sc">%&gt;%</span> <span class="fu">separate_wider_delim</span>(released, <span class="at">delim =</span><span class="st">&quot; (&quot;</span>, <span class="at">names=</span> <span class="fu">c</span>(<span class="st">&quot;date&quot;</span>,<span class="st">&quot;location&quot;</span>))</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#convert release date into date format</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>movie<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">mdy</span>(movie<span class="sc">$</span>date)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># get the release date in kaggle movie dataset</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>movie<span class="ot">&lt;-</span> movie <span class="sc">%&gt;%</span> <span class="fu">separate_wider_delim</span>(released, <span class="at">delim =</span><span class="st">&quot; (&quot;</span>, <span class="at">names=</span> <span class="fu">c</span>(<span class="st">&quot;date&quot;</span>,<span class="st">&quot;location&quot;</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#convert release date into date format</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>movie<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">mdy</span>(movie<span class="sc">$</span>date)</span></code></pre></div>
 <pre><code>## Warning: 10 failed to parse.</code></pre>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co">#add in year and quarter</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>movie<span class="ot">&lt;-</span>movie <span class="sc">%&gt;%</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">qtr=</span> <span class="fu">quarter</span>(date,<span class="at">with_year =</span> T))</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>movie</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co">#add in year and quarter</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>movie<span class="ot">&lt;-</span>movie <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">qtr=</span> <span class="fu">quarter</span>(date,<span class="at">with_year =</span> T))</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>movie</span></code></pre></div>
 <pre><code>## # A tibble: 7,668 × 17
 ##    name      rating genre  year date       location score  votes director writer
 ##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt; 
@@ -274,9 +298,9 @@ effectively.</p>
 </div>
 <div id="analysis" class="section level1">
 <h1>Analysis</h1>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co">#joining the data for kaggle movie and scraped data</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>movie2020 <span class="ot">&lt;-</span><span class="fu">inner_join</span>(movie, moviedf, <span class="at">by=</span><span class="fu">c</span>(<span class="st">&quot;name&quot;</span> <span class="ot">=</span> <span class="st">&quot;title&quot;</span>))</span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>movie2020</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co">#joining the data for kaggle movie and scraped data</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>movie2020 <span class="ot">&lt;-</span><span class="fu">inner_join</span>(movie, moviedf, <span class="at">by=</span><span class="fu">c</span>(<span class="st">&quot;name&quot;</span> <span class="ot">=</span> <span class="st">&quot;title&quot;</span>))</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>movie2020</span></code></pre></div>
 <pre><code>## # A tibble: 41 × 20
 ##    name      rating genre  year date.x     location score  votes director writer
 ##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt; 
@@ -302,22 +326,22 @@ genre and their average gross?</p>
 <p>Null Hypothesis: H0: mean1 = mean2 Alternative Hypothesis: HA: mean1
 != mean2</p>
 <p>Reject the Null Hypothesis since p-value is less than .05.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># mean, sd and n for action and horror genre</span></span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>stat_genre <span class="ot">&lt;-</span> movie <span class="sc">%&gt;%</span></span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="fu">filter</span>(genre <span class="sc">==</span> <span class="st">&quot;Action&quot;</span> <span class="sc">|</span> genre <span class="sc">==</span> <span class="st">&quot;Horror&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="fu">group_by</span>(genre) <span class="sc">%&gt;%</span></span>
-<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean =</span> <span class="fu">mean</span>(gross, <span class="at">na.rm=</span>T), <span class="at">sd =</span> <span class="fu">sd</span>(gross, <span class="at">na.rm =</span> T), <span class="at">n =</span> <span class="fu">n</span>())</span>
-<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>stat_genre</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># mean, sd and n for action and horror genre</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>stat_genre <span class="ot">&lt;-</span> movie <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="fu">filter</span>(genre <span class="sc">==</span> <span class="st">&quot;Action&quot;</span> <span class="sc">|</span> genre <span class="sc">==</span> <span class="st">&quot;Horror&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  <span class="fu">group_by</span>(genre) <span class="sc">%&gt;%</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean =</span> <span class="fu">mean</span>(gross, <span class="at">na.rm=</span>T), <span class="at">sd =</span> <span class="fu">sd</span>(gross, <span class="at">na.rm =</span> T), <span class="at">n =</span> <span class="fu">n</span>())</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>stat_genre</span></code></pre></div>
 <pre><code>## # A tibble: 2 × 4
 ##   genre        mean         sd     n
 ##   &lt;chr&gt;       &lt;dbl&gt;      &lt;dbl&gt; &lt;int&gt;
 ## 1 Action 145508581. 247515833.  1705
 ## 2 Horror  47372409.  74162667.   322</code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># genre for action and horror genre</span></span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>genre_act_hor<span class="ot">&lt;-</span> movie <span class="sc">%&gt;%</span></span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="fu">filter</span>(genre <span class="sc">==</span> <span class="st">&quot;Action&quot;</span> <span class="sc">|</span> genre <span class="sc">==</span> <span class="st">&quot;Horror&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(gross))</span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>genre_act_hor</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># genre for action and horror genre</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>genre_act_hor<span class="ot">&lt;-</span> movie <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>  <span class="fu">filter</span>(genre <span class="sc">==</span> <span class="st">&quot;Action&quot;</span> <span class="sc">|</span> genre <span class="sc">==</span> <span class="st">&quot;Horror&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(gross))</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>genre_act_hor</span></code></pre></div>
 <pre><code>## # A tibble: 1,980 × 17
 ##    name      rating genre  year date       location score  votes director writer
 ##    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt; 
@@ -334,8 +358,8 @@ genre and their average gross?</p>
 ## # ℹ 1,970 more rows
 ## # ℹ 7 more variables: star &lt;chr&gt;, country &lt;chr&gt;, budget &lt;dbl&gt;, gross &lt;dbl&gt;,
 ## #   company &lt;chr&gt;, runtime &lt;dbl&gt;, qtr &lt;dbl&gt;</code></pre>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co">#T Test </span></span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">t.test</span>(gross <span class="sc">~</span> genre, <span class="at">data =</span> genre_act_hor)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co">#T Test </span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="fu">t.test</span>(gross <span class="sc">~</span> genre, <span class="at">data =</span> genre_act_hor)</span></code></pre></div>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
@@ -347,9 +371,9 @@ genre and their average gross?</p>
 ## sample estimates:
 ## mean in group Action mean in group Horror 
 ##            145508581             47372409</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co">#boxplot for horror and action genre</span></span>
-<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="fu">ggplot</span>(genre_act_hor, <span class="fu">aes</span>(genre, gross)) <span class="sc">+</span></span>
-<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() </span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co">#boxplot for horror and action genre</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="fu">ggplot</span>(genre_act_hor, <span class="fu">aes</span>(genre, gross)) <span class="sc">+</span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() </span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="conclusion-include-challenges-faced" class="section level1">
