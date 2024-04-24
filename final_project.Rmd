@@ -60,7 +60,7 @@ head(df,20)
 
 We decided to get out send dataset through web-scraping. By using the function html_nodes(), we pulled in gross movie data for 2020 from https://www.boxofficemojo.com/year/2020/ 
 
-# Data Transformation
+# Data Transformation and Cleaning
 
 The originally scraped data is not in a useable format, so we must transform it into wide data so that we will have a unique value in the first column (date)
 
@@ -93,14 +93,27 @@ movie<-movie %>%
 
 movie
 ```
-# Analysis
+
 ```{r join-scrap_data-kaggle_data}
 #joining the data for kaggle movie and scraped data
 movie2020 <-inner_join(movie, moviedf, by=c("name" = "title"))
 movie2020
 ```
 
+```{r making gross numeric}
+#creating a subset
+movie2020_numeric <- movie2020
 
+#converting gross income into a numeric value for analysis
+movie2020_numeric$total_gross_numeric <- movie2020_numeric$total_gross
+movie2020_numeric$total_gross_numeric <- as.character(gsub("\\$", "", movie2020_numeric$total_gross_numeric))
+movie2020_numeric$total_gross_numeric <- as.numeric(gsub(",", "", movie2020_numeric$total_gross_numeric))
+
+#displaying highest gross incomes first
+movie2020_numeric <- movie2020_numeric[order(movie2020_numeric$total_gross_numeric, decreasing = TRUE),]
+movie2020_numeric
+```
+# Analysis
 # Statistical Analysis
 Research Question: Is there a difference between action and horror genre and their average gross?
 
