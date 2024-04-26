@@ -144,4 +144,109 @@ ggplot(genre_act_hor, aes(genre, gross)) +
   geom_boxplot() 
 ```
 
+
+
+
+
+
+
+
+# One feature that we did not cover in class (Data Visualization) 
+
+Our team wanted to visualize the consumption of movies across the world, using ggolot along with the packages loaded below to create a map showing total movie revenue by country. To create a map we used dplyr to filter the relevant columns, including the country. We then grouped by country summing the revenue from each movie. We then used the Iso package to find a common code for each country to be easily identfiable. We then used the sf package to load a map and plot the data on. 
+
+```{r}
+library(sf)
+library(ggrepel)
+library(countrycode)
+library(rnaturalearth)
+```
+
+
+
+```{r}
+
+map_data <- movie %>%
+  select(year, country, budget, gross) %>%
+  mutate( profit = gross-budget) %>%
+  na.omit(gross) %>%
+  filter(year <= 2010) %>%
+  group_by(country) %>%
+  summarise(total_income = sum(profit))
+
+
+#Add ISO which is a 3 letters code for each country  for Join function to work
+
+data_with_iso <- map_data %>%
+  mutate(Iso3 = countrycode::countrycode(
+    sourcevar = country,
+    origin = "country.name",
+    destination = "iso3c"))
+#
+
+world <- ne_countries(scale = "small", returnclass = "sf") 
+
+countries_movie_consumption <- world %>%
+  select(geometry, name, iso_a3) %>%
+  left_join(data_with_iso, by = c("iso_a3" = "Iso3"))
+
+
+world %>% 
+  st_transform(crs = "+proj=robin") %>%
+  ggplot() +
+  geom_sf(color = "darkgray") +
+  geom_sf(data = countries_movie_consumption, aes(fill = total_income)) +
+  theme_minimal() +
+   labs(
+    title = "World Movie Revenue by Country from 2010 - 2020",
+    subtitle = "Total Gross Income from Movies in million",
+    fill = "Total Gross Income (USD)"
+  )
+
+
+```
+From the plot above we can see that the USA is a lead in movie revenue. The USA movie industry not only generates substantial revenue but also serves as a key ambassador of American culture and values worldwide.
+
+
+```{r}
+
+map_data_2020 <- movie %>%
+  select(year, country, budget, gross) %>%
+  mutate( profit = gross-budget) %>%
+  na.omit(gross) %>%
+  filter(year == 2020) %>%
+  group_by(country) %>%
+  summarise(total_gross_income = sum(gross))
+
+data_with_iso <- map_data_2020 %>%
+  mutate(Iso3 = countrycode::countrycode(
+    sourcevar = country,
+    origin = "country.name",
+    destination = "iso3c"))
+
+
+world_2020 <- ne_countries(scale = "small", returnclass = "sf") 
+
+countries_movie_consumption_2020 <- world_2020 %>%
+  select(geometry, name, iso_a3) %>%
+  left_join(data_with_iso, by = c("iso_a3" = "Iso3"))
+
+
+world_2020 %>% 
+  st_transform(crs = "+proj=robin") %>%
+  ggplot() +
+  geom_sf(color = "darkgray") +
+  geom_sf(data = countries_movie_consumption_2020, aes(fill = total_gross_income)) +
+  theme_minimal() +
+   labs(
+    title = "World Movie Revenue by Country from 2020",
+    subtitle = "Total Gross Income from Movies in million",
+    fill = "Total Gross Income (USD)"
+  )
+
+```
+
+We can see from the plot above that in 2020 the movie revenue  for three countries: USA, Canada and China. 
+
+
 # Conclusion (include challenges faced)
