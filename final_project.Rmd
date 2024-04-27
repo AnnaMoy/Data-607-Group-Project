@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 During the year of 2020, the world went into lock down, many people were forced to stay home, thus having the time and space to consume more media than ever before.
 
-We could see movies being a popular source of entertainment during both during the peak of lock down (Spring/Summer 2020) where people watched many movies in their howes and once restrictions were eased and people were allowed to finally congregate in public spaces again.
+We could see movies being a popular source of entertainment during both during the peak of lock down (Spring/Summer 2020) where people watched many movies in their homes and once restrictions were eased and people were allowed to finally congregate in public spaces again.
 
 As the movie and entertainment industry have a large impact on today’s pop culture, we’re intrigued to see how successful certain movies were over the years, especially in 2020. We will also be delving into the gross income of a variety of movies in order to find which movie has the highest gross income. 
 
@@ -32,6 +32,10 @@ Our team used slack, discord and github in order to collaborate effectively.
 library(tidyverse)
 library(rvest)
 library(lubridate)
+library(sf)
+library(ggrepel)
+library(countrycode)
+library(rnaturalearth)
 ```
 
 ```{r read-csv-file, message = FALSE}
@@ -41,18 +45,18 @@ movie
 ```
 
 ```{r scrape-movie}
-# Webscraping
+# Webscraping from Boxoffice Mojo website
 # link to the website
 url <- "https://www.boxofficemojo.com/year/2020/"
 
 # read url link 
 webpage <- read_html(url)
 
-# pull in gross data from 2020
+# pull in movie title, gross, total gross and release date from 2020 movie information 
 gross_2020 <- html_nodes(webpage, ".mojo-field-type-date , .mojo-estimatable , .mojo-cell-wide") %>%
   html_text()
 
-# put into dataframe for total gross and average
+# put the information into a dataframe
 df <- data.frame(gross = gross_2020)
 
 head(df,20)
@@ -62,11 +66,10 @@ We decided to get out send dataset through web-scraping. By using the function h
 
 # Data Transformation and Cleaning
 
-The originally scraped data is not in a useable format, so we must transform it into wide data so that we will have a unique value in the first column (date)
+The originally scraped data is not in a usable format, so we must transform it into wide data so that we will have a unique value in the first column (date)
 
 ```{r data-transformation-webscrape}
-
-# split up the data into their own columns
+# All the data was in one column therefore we split up the data into their own columns and provided new column names
 df <- df %>%
   mutate(ind = rep(c("title", "gross_data", "total_gross","date"),length.out = n())) %>%
   group_by(ind) %>%
@@ -81,8 +84,9 @@ moviedf
 ```
 
 ```{r data-transformation}
-# get the release date in kaggle movie dataset
-movie<- movie %>% separate_wider_delim(released, delim =" (", names= c("date","location"))
+# Transform the release date in the kaggle movie dataset
+movie<- movie %>% 
+  separate_wider_delim(released, delim =" (", names= c("date","location"))
 
 #convert release date into date format
 movie$date <- mdy(movie$date)
@@ -95,7 +99,7 @@ movie
 ```
 
 ```{r join-scrap_data-kaggle_data}
-#joining the data for kaggle movie and scraped data
+#joining the data for kaggle movie and webscraped data from Box Office Mojo
 movie2020 <-inner_join(movie, moviedf, by=c("name" = "title"))
 movie2020
 ```
@@ -115,57 +119,38 @@ movie2020_numeric
 ```
 # Analysis
 # Statistical Analysis
-Research Question: Is there a difference between action and horror genre and their average gross?
+Null Hypothesis:There is no difference between 2019 and 2020 total gross
 
-Null Hypothesis: H0: mean1 = mean2
-Alternative Hypothesis: HA: mean1 != mean2
+Alternative Hypothesis: There is a difference between 2019 and 2020 total gross
 
-Reject the Null Hypothesis since p-value is less than .05.
+Reject the Alternative Hypothesis since p-value is greater than .05.
 
 ```{r statistical-analysis}
-# mean, sd and n for action and horror genre
-stat_genre <- movie %>%
-  filter(genre == "Action" | genre == "Horror") %>%
-  group_by(genre) %>%
-  summarize(mean = mean(gross, na.rm=T), sd = sd(gross, na.rm = T), n = n())
-stat_genre
-
-# genre for action and horror genre
-genre_act_hor<- movie %>%
-  filter(genre == "Action" | genre == "Horror") %>%
-  filter(!is.na(gross))
-genre_act_hor
+# 2019 and 2020 movie gross data
+gross2020 <- movie2020_numeric %>%
+  filter(year == 2020 | year == 2019)
+gross2020
 
 #T Test 
-t.test(gross ~ genre, data = genre_act_hor)
+t.test(total_gross_numeric ~ year, data = gross2020)
+
+#Make a copy of the year column
+gross2020$yearchar = gross2020$year 
+# change yearchar to categorical 
+gross2020$yearchar <- as.factor(gross2020$yearchar)
 
 #boxplot for horror and action genre
-ggplot(genre_act_hor, aes(genre, gross)) +
+ggplot(gross2020, aes(yearchar, total_gross_numeric)) +
   geom_boxplot() 
 ```
 
 
 
-
-
-
-
-
 # One feature that we did not cover in class (Data Visualization) 
 
-Our team wanted to visualize the consumption of movies across the world, using ggolot along with the packages loaded below to create a map showing total movie revenue by country. To create a map we used dplyr to filter the relevant columns, including the country. We then grouped by country summing the revenue from each movie. We then used the Iso package to find a common code for each country to be easily identfiable. We then used the sf package to load a map and plot the data on. 
+Our team wanted to visualize the consumption of movies across the world, using ggplot along with the packages loaded below to create a map showing total movie revenue by country. To create a map we used dplyr to filter the relevant columns, including the country. We then grouped by country summing the revenue from each movie. We then used the Iso package to find a common code for each country to be easily identifiable. We then used the sf package to load a map and plot the data on. 
 
 ```{r}
-library(sf)
-library(ggrepel)
-library(countrycode)
-library(rnaturalearth)
-```
-
-
-
-```{r}
-
 map_data <- movie %>%
   select(year, country, budget, gross) %>%
   mutate( profit = gross-budget) %>%
@@ -176,7 +161,6 @@ map_data <- movie %>%
 
 
 #Add ISO which is a 3 letters code for each country  for Join function to work
-
 data_with_iso <- map_data %>%
   mutate(Iso3 = countrycode::countrycode(
     sourcevar = country,
@@ -246,7 +230,7 @@ world_2020 %>%
 
 ```
 
-We can see from the plot above that in 2020 the movie revenue  for three countries: USA, Canada and China. 
+We can see from the plot above that in 2020 the movie revenue for three countries: USA, Canada and China. 
 
 
 # Conclusion (include challenges faced)
