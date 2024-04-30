@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-During the year of 2020, the world went into lock down, many people were forced to stay home, thus having the time and space to consume more media than ever before.
+During the year of 2020, the world went into lock down, many people were forced to stay home, thus having the time to consume more media than ever before.
 
 We could see movies being a popular source of entertainment during both during the peak of lock down (Spring/Summer 2020) where people watched many movies in their homes and once restrictions were eased and people were allowed to finally congregate in public spaces again.
 
