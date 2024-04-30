@@ -282,7 +282,10 @@ ggplot(gross2020, aes(yearchar, total_gross_numeric)) +
 ```
 
 
-
-
-
 # Conclusion (include challenges faced)
+
+We can see through our analysis that movies had a large impact on views, especially during the pandemic, where it became one of the main source of entertainment.[add more?]
+
+We did come across a few challenges in the making of this project, one of them being choosing two datasets that have a relationship and can be used in analysis. It took us quite some time to find two datasets, especially since the two datasets could not be from the same source. Despite this difficulty, taking the time to discover and compare multiple datasets helped us think and interpret data in a relational sense.
+
+
