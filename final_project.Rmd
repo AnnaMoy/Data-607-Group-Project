@@ -18,9 +18,7 @@ During the year of 2020, the world went into lock down, many people were forced 
 
 We could see movies being a popular source of entertainment during both during the peak of lock down (Spring/Summer 2020) where people watched many movies in their homes and once restrictions were eased and people were allowed to finally congregate in public spaces again.
 
-As the movie and entertainment industry have a large impact on today’s pop culture, we’re intrigued to see how successful certain movies were over the years, especially in 2020. We will also be delving into the gross income of a variety of movies in order to find which movie has the highest gross income. 
-
-We will also dig a bit deeper to see what movies were most successful via different categories (all time, by a specific year, genre etc).  
+As the movie and entertainment industry have a large impact on today’s pop culture, we’re intrigued to see how successful certain movies were over the years, especially in 2020. We will also be delving into the gross income of a variety of movies in order to find which movie was the most profitable. 
 
 Our datasets will be coming from Kaggle: [Movie Industry](https://www.kaggle.com/datasets/danielgrijalvas/movies) and through web scraping on [Box Office Mojo](https://www.boxofficemojo.com/year/2020/). 
 
@@ -118,33 +116,58 @@ movie2020_numeric <- movie2020_numeric[order(movie2020_numeric$total_gross_numer
 movie2020_numeric
 ```
 # Analysis
-# Statistical Analysis
-Null Hypothesis:There is no difference between 2019 and 2020 total gross
 
-Alternative Hypothesis: There is a difference between 2019 and 2020 total gross
+Using our tidied data, we will use it to discover some insights on the movies released in 2020, such as:
 
-Reject the Alternative Hypothesis since p-value is greater than .05.
+Which movie in 2020 was the most successful?
 
-```{r statistical-analysis}
-# 2019 and 2020 movie gross data
-gross2020 <- movie2020_numeric %>%
-  filter(year == 2020 | year == 2019)
-gross2020
+To define a movie's success, I will measure it by profit, where if a movie makes more than what they spend for their budget, they will be considered successful, and the movie with the largest profit will be the most successful.
 
-#T Test 
-t.test(total_gross_numeric ~ year, data = gross2020)
-
-#Make a copy of the year column
-gross2020$yearchar = gross2020$year 
-# change yearchar to categorical 
-gross2020$yearchar <- as.factor(gross2020$yearchar)
-
-#boxplot for horror and action genre
-ggplot(gross2020, aes(yearchar, total_gross_numeric)) +
-  geom_boxplot() 
+```{r}
+ggplot(movie2020_numeric, aes(x = budget, y = total_gross_numeric)) +
+  geom_point() +
+  labs(title = "Budget vs Gross Income for Movies (2020)",
+       x = "Budget (in million $)",
+       y = "Gross Income (in million $)") +
+  theme_minimal()
 ```
 
+Using a scatterplot to compare budget against gross_income of each movie, we can see a general positive relation, however, there are a good amount of movies that had a large budget but did not make revenue.
 
+Now that we see the trend, let's see which movies made a profit:
+
+```{r}
+#finding difference
+movie2020_numeric$profit <- movie2020_numeric$total_gross_numeric - movie2020_numeric$budget
+
+# Create a new column indicating whether the movie made a profit or not
+movie2020_numeric$profitable <- ifelse(movie2020_numeric$profit > 0, "Profitable", "Not Profitable")
+
+# Create the visualization
+ggplot(movie2020_numeric, aes(x = budget, y = total_gross_numeric, color = profitable)) +
+  geom_point() +
+  labs(title = "Budget vs Total Gross for Movies (2020)",
+       x = "Budget (in million $)",
+       y = "Total Gross (in million $)",
+       color = "Profitability") +
+  theme_minimal()
+```
+
+From this visual we can identify which movies had a total gross that surpassed their budget, thus making a profit. We can also see that a majority of movies did make some profit.
+
+
+
+```{r}
+# Sort the dataset by profit in descending order
+movie2020_numeric_sorted <- movie2020_numeric[order(-movie2020_numeric$profit), ]
+
+# We'll look at the top 5 movies
+top_5_profitable <- head(movie2020_numeric, 5)
+
+top_5_profitable
+print(top_5_profitable[, c("name", "budget", "total_gross", "profit")])
+```
+From listing the top 5 movies, we can see that Star Wars: Episode IX - The Rise of Skywalker was the most successful movie in 2020.
 
 # One feature that we did not cover in class (Data Visualization) 
 
@@ -231,6 +254,35 @@ world_2020 %>%
 ```
 
 We can see from the plot above that in 2020 the movie revenue for three countries: USA, Canada and China. 
+
+# Statistical Analysis
+Null Hypothesis:There is no difference between 2019 and 2020 total gross
+
+Alternative Hypothesis: There is a difference between 2019 and 2020 total gross
+
+Reject the Alternative Hypothesis since p-value is greater than .05.
+
+```{r statistical-analysis}
+# 2019 and 2020 movie gross data
+gross2020 <- movie2020_numeric %>%
+  filter(year == 2020 | year == 2019)
+gross2020
+
+#T Test 
+t.test(total_gross_numeric ~ year, data = gross2020)
+
+#Make a copy of the year column
+gross2020$yearchar = gross2020$year 
+# change yearchar to categorical 
+gross2020$yearchar <- as.factor(gross2020$yearchar)
+
+#boxplot for horror and action genre
+ggplot(gross2020, aes(yearchar, total_gross_numeric)) +
+  geom_boxplot() 
+```
+
+
+
 
 
 # Conclusion (include challenges faced)
