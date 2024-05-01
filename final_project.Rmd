@@ -98,6 +98,11 @@ movie<-movie %>%
 #joining the data for kaggle movie and webscraped data from Box Office Mojo
 movie2020 <-inner_join(movie, moviedf, by=c("name" = "title"))
 
+#filter dataset for movies of 2019 and 2020
+
+movie2020 <- movie2020 %>%
+  filter(year %in% c("2019","2020"))
+movie2020
 ```
 
 ```{r making gross numeric}
