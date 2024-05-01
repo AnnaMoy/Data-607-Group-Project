@@ -18,7 +18,7 @@ During the year of 2020, the world went into lock down, many people were forced 
 
 We could see movies being a popular source of entertainment during both the peak of lock down (Spring/Summer 2020) where people watched many movies in their homes and once restrictions were eased and people were allowed to finally congregate in public spaces again.
 
-As the movie and entertainment industry have a large impact on today’s pop culture, we’re intrigued to see how successful certain movies were over the years, especially in 2019 and 2020. We will also be delving into the gross income of a variety of movies in order to find which movie was the most profitable. Comparing the 2019 and 2020 data to determine if the pandemic impacted the total profits for movies.  
+As the movie and entertainment industry have a large impact on today’s pop culture, we’re intrigued to see how successful certain movies were over the years, especially in 2019 and 2020. We will also be delving into the gross income of a variety of movies in order to find which movie was the most profitable. Comparing the 2019 and 2020 data to determine if the pandemic impacted the total profits theses movies received. 
 
 Our datasets will be coming from Kaggle: [Movie Industry](https://www.kaggle.com/datasets/danielgrijalvas/movies) and through web scraping on [Box Office Mojo](https://www.boxofficemojo.com/year/2020/). 
 
@@ -75,7 +75,7 @@ df <- df %>%
   spread(ind, gross) %>%
   select(-id)
 
-#remove line 1 which initally has the old titles
+#remove line 1 which initially has the old titles
 moviedf <- df[-1,]
 
 
@@ -117,18 +117,42 @@ movie2020_numeric <- movie2020_numeric[order(movie2020_numeric$total_gross_numer
 movie2020_numeric
 
 ```
+
+```{r making 2019 gross numeric2}
+#creating a subset and filter for 2019 movies
+movie2019 <- movie_df %>%
+  filter(year %in% c("2019"))
+
+movie2019_numeric <- movie2019
+
+#converting gross income into a numeric value for analysis
+movie2019_numeric$total_gross_numeric <- movie2019_numeric$total_gross
+movie2019_numeric$total_gross_numeric <- as.character(gsub("\\$", "", movie2019_numeric$total_gross_numeric))
+movie2019_numeric$total_gross_numeric <- as.numeric(gsub(",", "", movie2019_numeric$total_gross_numeric))
+
+#displaying highest gross incomes first
+movie2019_numeric <- movie2019_numeric[order(movie2019_numeric$total_gross_numeric, decreasing = TRUE),]
+movie2019_numeric
+```
 # Analysis
 
 Using our tidied data, we will use it to discover some insights on the movies released in 2020, such as:
 
-Which movie in 2020 was the most successful?
+Which movie in 2019 and 2020 was the most profitable?
 
 To define a movie's success, I will measure it by profit, where if a movie makes more than what they spend for their budget, they will be considered successful, and the movie with the largest profit will be the most successful.
 
-```{r}
+```{r ggplot 2020 and 2019,figures-side, fig.show="hold", out.width="50%", echo = FALSE}
 ggplot(movie2020_numeric, aes(x = budget, y = total_gross_numeric)) +
   geom_point() +
   labs(title = "Budget vs Total Gross for Movies (2020)",
+       x = "Budget (in million $)",
+       y = "Total Gross (in million $)") +
+  theme_minimal()
+
+ggplot(movie2019_numeric, aes(x = budget, y = total_gross_numeric)) +
+  geom_point() +
+  labs(title = "Budget vs Total Gross for Movies (2019)",
        x = "Budget (in million $)",
        y = "Total Gross (in million $)") +
   theme_minimal()
@@ -138,7 +162,7 @@ Using a scatterplot to compare budget against gross_income of each movie, we can
 
 Now that we see the trend, let's see which movies made a profit:
 
-```{r}
+```{r,figures-side, fig.show="hold", out.width="50%", echo = FALSE}
 #finding difference
 movie2020_numeric$profit <- movie2020_numeric$total_gross_numeric - movie2020_numeric$budget
 
@@ -149,6 +173,21 @@ movie2020_numeric$profitable <- ifelse(movie2020_numeric$profit > 0, "Profitable
 ggplot(movie2020_numeric, aes(x = budget, y = total_gross_numeric, color = profitable)) +
   geom_point() +
   labs(title = "Budget vs Total Gross for Movies (2020)",
+       x = "Budget (in million $)",
+       y = "Total Gross (in million $)",
+       color = "Profitability") +
+  theme_minimal()
+
+#finding difference
+movie2019_numeric$profit <- movie2019_numeric$total_gross_numeric - movie2019_numeric$budget
+
+# Create a new column indicating whether the movie made a profit or not
+movie2019_numeric$profitable <- ifelse(movie2019_numeric$profit > 0, "Profitable", "Not Profitable")
+
+# Create the visualization
+ggplot(movie2019_numeric, aes(x = budget, y = total_gross_numeric, color = profitable)) +
+  geom_point() +
+  labs(title = "Budget vs Total Gross for Movies (2019)",
        x = "Budget (in million $)",
        y = "Total Gross (in million $)",
        color = "Profitability") +
@@ -170,27 +209,9 @@ print(top_5_profitable[, c("name", "budget", "total_gross", "profit")])
 ```
 From listing the top 5 movies, we can see that Bad Boys for Life was the most successful movie in 2020.
 
-We can also compare the profits between 2019 and 2020, or pre-lockdown vs lockdown times.
-
-```{r making 2019 gross numeric}
-#creating a subset and filter for 2020 movies
-movie2019 <- movie_df %>%
-  filter(year %in% c("2019"))
-
-movie2019_numeric <- movie2019
-
-#converting gross income into a numeric value for analysis
-movie2019_numeric$total_gross_numeric <- movie2019_numeric$total_gross
-movie2019_numeric$total_gross_numeric <- as.character(gsub("\\$", "", movie2019_numeric$total_gross_numeric))
-movie2019_numeric$total_gross_numeric <- as.numeric(gsub(",", "", movie2019_numeric$total_gross_numeric))
-
-#displaying highest gross incomes first
-movie2019_numeric <- movie2019_numeric[order(movie2019_numeric$total_gross_numeric, decreasing = TRUE),]
-movie2019_numeric
-```
+We can also compare the profits between 2019 and 2020 in our analysis. 
 
 ```{r 2019 profitable}
-
 #finding difference
 movie2019_numeric$profit <- movie2019_numeric$total_gross_numeric - movie2019_numeric$budget
 
@@ -304,21 +325,35 @@ Alternative Hypothesis: There is a difference between 2019 and 2020 profit
 Reject the Null Hypothesis since p-value is less than .05.
 
 ```{r statistical-analysis}
+#creating a subset and filter for 2019 and 2020 movies
+movieall <- movie_df %>%
+  filter(year %in% c("2019", "2020"))
+
+
+#converting gross income into a numeric value for analysis
+movieall$total_gross_numeric <- movieall$total_gross
+movieall$total_gross_numeric <- as.character(gsub("\\$", "", movieall$total_gross_numeric))
+movieall$total_gross_numeric <- as.numeric(gsub(",", "", movieall$total_gross_numeric))
+
+#displaying highest gross incomes first
+movieall2 <- movieall[order(movieall$total_gross_numeric, decreasing = TRUE),]
+
+
 # 2019 and 2020 movie gross data
-gross2020 <- movie2020_numeric %>%
-  filter(year == 2020 | year == 2019) %>%
-  mutate(profit = (total_gross_numeric- budget))
+movieall3 <- movieall2 %>%
+  mutate(profit = (total_gross_numeric- budget)) 
 
 #T Test 
-t.test(profit ~ year, data = gross2020)
+t.test(profit ~ year, data = movieall3)
 
 #Make a copy of the year column
-gross2020$yearchar = gross2020$year 
+movieall3$yearchar = movieall3$year 
 # change yearchar to categorical 
-gross2020$yearchar <- as.factor(gross2020$yearchar)
+movieall3$yearchar <- as.factor(movieall3$yearchar)
 
-#boxplot for horror and action genre
-ggplot(gross2020, aes(yearchar, profit)) +
+
+#boxplot for year and profits
+ggplot(movieall3, aes(yearchar, profit)) +
   geom_boxplot() +
   labs(
     title = "Movie Profit for 2019 and 2020",
@@ -329,7 +364,7 @@ ggplot(gross2020, aes(yearchar, profit)) +
 
 # Conclusion
 
-We can see through our analysis that movies had a large impact on views, especially during the pandemic, where it became one of the main source of entertainment. The pandemic definitely had an impact on the profits in movies in 2020 as they were significantly lower than those in 2019. [add more?]
+We can see through our analysis that movies had a large impact on views, especially during the pandemic, where it became one of the main source of entertainment. The profits in movies in 2020 were significantly lower than those in 2019 due to the pandemic a lot less people went to the movies. 
 
 We did come across a few challenges in the making of this project, one of them being choosing two datasets that have a relationship and can be used in analysis. It took us quite some time to find two datasets, especially since the two datasets could not be from the same source. Despite this difficulty, taking the time to discover and compare multiple datasets helped us think and interpret data in a relational sense.
 
