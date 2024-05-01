@@ -233,40 +233,44 @@ From listing the top 5 movies, we can see that Frozen II was the most successful
 
 # Data Visualization Feature To Create Map
 
-Our team wanted to visualize the consumption of movies across the world, using ggplot along with the packages loaded below to create a map showing total movie revenue by country. To create a map we used dplyr to filter the relevant columns, including the country. We then grouped by country summing the revenue from each movie. We then used the Iso package to find a common code for each country to be easily identifiable. We then used the sf package to load a map and plot the data on. 
+Our team wanted to visualize the consumption of movies across the world before and after the pandamice 2019 vs 2020. Using ggplot along with the packages loaded below, our team was able to create a map showing total movie revenue by country. To create a map we used dplyr to filter the relevant columns, including the country. We then grouped by country summing the revenue from each movie. We then used the Iso package to find a common code for each country to be easily identifiable. We then used the sf package to load a map and plot the data on. 
 
 ```{r}
-map_data <- movie %>%
-  select(year, country, budget, gross) %>%
-  mutate( profit = gross-budget) %>%
-  na.omit(gross) %>%
-  filter(year <= 2010) %>%
-  group_by(country) %>%
-  summarise(total_income = sum(profit))
+#First we create a data frame with the relevent information needed for the map. 
+map_data <- movie %>%   
+  select(year, country, budget, gross) %>% 
+  mutate( profit = gross-budget) %>%  #created a new variable named profit, which calculates the net profit per movie.
+  na.omit(gross) %>% #removed empty variables 
+  filter(year == 2019) %>% #filtered for year 2019
+  group_by(country) %>% #grouped by country 
+  summarise(total_income = sum(profit)) 
 
 
-#Add ISO which is a 3 letters code for each country  for Join function to work
+#Add ISO which is a 3 letters code for each country  for Join function to work. This uses the countrycode package's countrycode function to convert country names in the "country" column into ISO 3166-1 alpha-3 country codes.
+
 data_with_iso <- map_data %>%
   mutate(Iso3 = countrycode::countrycode(
     sourcevar = country,
     origin = "country.name",
     destination = "iso3c"))
-#
+#The following code uses the ne_countries function from the rnaturalearth package to retrieve a dataset containing geometrical information (e.g., boundaries) of countries worldwide.
+
 world <- ne_countries(scale = "small", returnclass = "sf") 
 
+#The following code combining the data frame we created above with data with ISO which will give the co ordinations of each country.
 countries_movie_consumption <- world %>%
   select(geometry, name, iso_a3) %>%
   left_join(data_with_iso, by = c("iso_a3" = "Iso3"))
 
-
+#The following code generates a map visualization showing the distribution of movie revenue by country for 2019, with darker shades representing higher revenue.
 world %>% 
-  st_transform(crs = "+proj=robin") %>%
+  st_transform(crs = "+proj=robin") %>% #This first transforms the geometrical data in the "world" dataset to use the Robinson projection. The Robinson projection is a pseudo-cylindrical projection commonly used for world maps.
   ggplot() +
   geom_sf(color = "darkgray") +
   geom_sf(data = countries_movie_consumption, aes(fill = total_income)) +
   theme_minimal() +
    labs(
-    title = "World Movie Revenue by Country from 2010 - 2020",
+    title = "World Movie Revenue by Country for 2019",
     subtitle = "Total Gross Income from Movies in million",
     fill = "Total Gross Income (USD)"
   )
@@ -308,14 +312,14 @@ world_2020 %>%
   geom_sf(data = countries_movie_consumption_2020, aes(fill = total_gross_income)) +
   theme_minimal() +
    labs(
-    title = "World Movie Revenue by Country from 2020",
+    title = "World Movie Revenue by Country for 2020",
     subtitle = "Total Gross Income from Movies in million",
     fill = "Total Gross Income (USD)"
   )
 
 ```
 
-We can see from the plot above that in 2020 the movie revenue for three countries: USA, Canada and China. 
+We can see from the plot above that in 2020 the movie revenue for three countries: USA, Canada and China. The plot also shows a significant decline in Europe profits through the movie industry, compared to the year prior. 
 
 # Statistical Analysis
 Null Hypothesis: There is no difference between 2019 and 2020 profit
