@@ -96,17 +96,15 @@ movie<-movie %>%
 
 ```{r join-scrap_data-kaggle_data}
 #joining the data for kaggle movie and webscraped data from Box Office Mojo
-movie2020 <-inner_join(movie, moviedf, by=c("name" = "title"))
+movie_df <-inner_join(movie, moviedf, by=c("name" = "title"))
 
-#filter dataset for movies of 2019 and 2020
-
-movie2020 <- movie2020 %>%
-  filter(year %in% c("2019","2020"))
-movie2020
 ```
 
-```{r making gross numeric}
-#creating a subset
+```{r making 2020 gross numeric}
+#creating a subset and filter for 2020 movies
+movie2020 <- movie_df %>%
+  filter(year %in% c("2020"))
+
 movie2020_numeric <- movie2020
 
 #converting gross income into a numeric value for analysis
@@ -117,6 +115,7 @@ movie2020_numeric$total_gross_numeric <- as.numeric(gsub(",", "", movie2020_nume
 #displaying highest gross incomes first
 movie2020_numeric <- movie2020_numeric[order(movie2020_numeric$total_gross_numeric, decreasing = TRUE),]
 movie2020_numeric
+
 ```
 # Analysis
 
@@ -129,13 +128,13 @@ To define a movie's success, I will measure it by profit, where if a movie makes
 ```{r}
 ggplot(movie2020_numeric, aes(x = budget, y = total_gross_numeric)) +
   geom_point() +
-  labs(title = "Budget vs Gross Income for Movies (2020)",
+  labs(title = "Budget vs Total Gross for Movies (2020)",
        x = "Budget (in million $)",
-       y = "Gross Income (in million $)") +
+       y = "Total Gross (in million $)") +
   theme_minimal()
 ```
 
-Using a scatterplot to compare budget against gross_income of each movie, we can see a general positive relation, however, there are a good amount of movies that had a large budget but did not make revenue.
+Using a scatterplot to compare budget against gross_income of each movie, we can that there isn't a general trend here, however, there are a few movies that had similar budgets but varied in their overall gross.
 
 Now that we see the trend, let's see which movies made a profit:
 
@@ -156,7 +155,7 @@ ggplot(movie2020_numeric, aes(x = budget, y = total_gross_numeric, color = profi
   theme_minimal()
 ```
 
-From this visual we can identify which movies had a total gross that surpassed their budget, thus making a profit. We can also see that a majority of movies did make some profit.
+From this visual we can identify which movies had a total gross that surpassed their budget, thus making a profit. We can also see that a majority of movies did not make a profit.
 
 
 
@@ -165,26 +164,51 @@ From this visual we can identify which movies had a total gross that surpassed t
 movie2020_numeric_sorted <- movie2020_numeric[order(-movie2020_numeric$profit), ]
 
 # We'll look at the top 5 movies
-top_5_profitable <- head(movie2020_numeric, 5)
+top_5_profitable <- head(movie2020_numeric_sorted, 5)
 
 print(top_5_profitable[, c("name", "budget", "total_gross", "profit")])
 ```
-From listing the top 5 movies, we can see that Star Wars: Episode IX - The Rise of Skywalker was the most successful movie in 2020.
+From listing the top 5 movies, we can see that Bad Boys for Life was the most successful movie in 2020.
+
+We can also compare the profits between 2019 and 2020, or pre-lockdown vs lockdown times.
+
+```{r making 2019 gross numeric}
+#creating a subset and filter for 2020 movies
+movie2019 <- movie_df %>%
+  filter(year %in% c("2019"))
+
+movie2019_numeric <- movie2019
+
+#converting gross income into a numeric value for analysis
+movie2019_numeric$total_gross_numeric <- movie2019_numeric$total_gross
+movie2019_numeric$total_gross_numeric <- as.character(gsub("\\$", "", movie2019_numeric$total_gross_numeric))
+movie2019_numeric$total_gross_numeric <- as.numeric(gsub(",", "", movie2019_numeric$total_gross_numeric))
+
+#displaying highest gross incomes first
+movie2019_numeric <- movie2019_numeric[order(movie2019_numeric$total_gross_numeric, decreasing = TRUE),]
+movie2019_numeric
+```
 
 ```{r 2019 profitable}
 
-# filter for 2019 movies and calculated the profit (total gross - budget)
-movie2019_numeric_sorted <- movie2020_numeric %>%
-  filter(year == 2019) %>%
-  mutate(profit = (total_gross_numeric- budget)) %>%
-  select(name, budget, total_gross, profit)
-  
-# Top 5 movies in 2019
+#finding difference
+movie2019_numeric$profit <- movie2019_numeric$total_gross_numeric - movie2019_numeric$budget
+
+# Create a new column indicating whether the movie made a profit or not
+movie2019_numeric$profitable <- ifelse(movie2019_numeric$profit > 0, "Profitable", "Not Profitable")
+
+
+# Sort the dataset by profit in descending order
+movie2019_numeric_sorted <- movie2019_numeric[order(-movie2019_numeric$profit), ]
+
+# We'll look at the top 5 movies
 top_5_profitable_2019 <- head(movie2019_numeric_sorted, 5)
-top_5_profitable_2019
+
+print(top_5_profitable_2019[, c("name", "budget", "total_gross", "profit")])
+
 ```
 
-From listing the top 5 movies, we can see that Star Wars: Episode IX - The Rise of Skywalker was the most successful movie in 2019.
+From listing the top 5 movies, we can see that Frozen II was the most successful movie in 2019.
 
 # Data Visualization Feature To Create Map
 
