@@ -16,9 +16,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 During the year of 2020, the world went into lock down, many people were forced to stay home, thus having the time to consume more media than ever before.
 
-We could see movies being a popular source of entertainment during both during the peak of lock down (Spring/Summer 2020) where people watched many movies in their homes and once restrictions were eased and people were allowed to finally congregate in public spaces again.
+We could see movies being a popular source of entertainment during both the peak of lock down (Spring/Summer 2020) where people watched many movies in their homes and once restrictions were eased and people were allowed to finally congregate in public spaces again.
 
-As the movie and entertainment industry have a large impact on today’s pop culture, we’re intrigued to see how successful certain movies were over the years, especially in 2020. We will also be delving into the gross income of a variety of movies in order to find which movie was the most profitable. 
+As the movie and entertainment industry have a large impact on today’s pop culture, we’re intrigued to see how successful certain movies were over the years, especially in 2019 and 2020. We will also be delving into the gross income of a variety of movies in order to find which movie was the most profitable. 
 
 Our datasets will be coming from Kaggle: [Movie Industry](https://www.kaggle.com/datasets/danielgrijalvas/movies) and through web scraping on [Box Office Mojo](https://www.boxofficemojo.com/year/2020/). 
 
@@ -60,11 +60,11 @@ df <- data.frame(gross = gross_2020)
 head(df,20)
 ``` 
 
-We decided to get out send dataset through web-scraping. By using the function html_nodes(), we pulled in gross movie data for 2020 from https://www.boxofficemojo.com/year/2020/ 
+We decided to get our dataset through web-scraping. By using the function html_nodes(), we pulled in gross movie data for 2020 from https://www.boxofficemojo.com/year/2020/ 
 
 # Data Transformation and Cleaning
 
-The originally scraped data is not in a usable format, so we must transform it into wide data so that we will have a unique value in the first column (date)
+The originally scraped data is not in a usable format, so we must transform it into wide data so each column has it's own observations in each column. 
 
 ```{r data-transformation-webscrape}
 # All the data was in one column therefore we split up the data into their own columns and provided new column names
@@ -75,9 +75,9 @@ df <- df %>%
   spread(ind, gross) %>%
   select(-id)
 
-#remove line 1
+#remove line 1 which initally has the old titles
 moviedf <- df[-1,]
-moviedf
+
 
 ```
 
@@ -92,14 +92,12 @@ movie$date <- mdy(movie$date)
 #add in year and quarter
 movie<-movie %>%
   mutate(qtr= quarter(date,with_year = T))
-
-movie
 ```
 
 ```{r join-scrap_data-kaggle_data}
 #joining the data for kaggle movie and webscraped data from Box Office Mojo
 movie2020 <-inner_join(movie, moviedf, by=c("name" = "title"))
-movie2020
+
 ```
 
 ```{r making gross numeric}
@@ -164,12 +162,26 @@ movie2020_numeric_sorted <- movie2020_numeric[order(-movie2020_numeric$profit), 
 # We'll look at the top 5 movies
 top_5_profitable <- head(movie2020_numeric, 5)
 
-top_5_profitable
 print(top_5_profitable[, c("name", "budget", "total_gross", "profit")])
 ```
 From listing the top 5 movies, we can see that Star Wars: Episode IX - The Rise of Skywalker was the most successful movie in 2020.
 
-# One feature that we did not cover in class (Data Visualization) 
+```{r 2019 profitable}
+
+# filter for 2019 movies and calculated the profit (total gross - budget)
+movie2019_numeric_sorted <- movie2020_numeric %>%
+  filter(year == 2019) %>%
+  mutate(profit = (total_gross_numeric- budget)) %>%
+  select(name, budget, total_gross, profit)
+  
+# Top 5 movies in 2019
+top_5_profitable_2019 <- head(movie2019_numeric_sorted, 5)
+top_5_profitable_2019
+```
+
+From listing the top 5 movies, we can see that Star Wars: Episode IX - The Rise of Skywalker was the most successful movie in 2019.
+
+# Data Visualization Feature To Create Map
 
 Our team wanted to visualize the consumption of movies across the world, using ggplot along with the packages loaded below to create a map showing total movie revenue by country. To create a map we used dplyr to filter the relevant columns, including the country. We then grouped by country summing the revenue from each movie. We then used the Iso package to find a common code for each country to be easily identifiable. We then used the sf package to load a map and plot the data on. 
 
@@ -190,7 +202,6 @@ data_with_iso <- map_data %>%
     origin = "country.name",
     destination = "iso3c"))
 #
-
 world <- ne_countries(scale = "small", returnclass = "sf") 
 
 countries_movie_consumption <- world %>%
@@ -212,6 +223,7 @@ world %>%
 
 
 ```
+
 From the plot above we can see that the USA is a lead in movie revenue. The USA movie industry not only generates substantial revenue but also serves as a key ambassador of American culture and values worldwide.
 
 
@@ -256,7 +268,7 @@ world_2020 %>%
 We can see from the plot above that in 2020 the movie revenue for three countries: USA, Canada and China. 
 
 # Statistical Analysis
-Null Hypothesis:There is no difference between 2019 and 2020 total gross
+Null Hypothesis: There is no difference between 2019 and 2020 total gross
 
 Alternative Hypothesis: There is a difference between 2019 and 2020 total gross
 
@@ -266,7 +278,6 @@ Reject the Alternative Hypothesis since p-value is greater than .05.
 # 2019 and 2020 movie gross data
 gross2020 <- movie2020_numeric %>%
   filter(year == 2020 | year == 2019)
-gross2020
 
 #T Test 
 t.test(total_gross_numeric ~ year, data = gross2020)
@@ -278,11 +289,15 @@ gross2020$yearchar <- as.factor(gross2020$yearchar)
 
 #boxplot for horror and action genre
 ggplot(gross2020, aes(yearchar, total_gross_numeric)) +
-  geom_boxplot() 
+  geom_boxplot() +
+  labs(
+    title = "Total Gross Income for 2019 and 2020",
+    x = "Years",
+    y = "Total Gross Income")
 ```
 
 
-# Conclusion (include challenges faced)
+# Conclusion
 
 We can see through our analysis that movies had a large impact on views, especially during the pandemic, where it became one of the main source of entertainment.[add more?]
 
