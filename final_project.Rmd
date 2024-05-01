@@ -18,7 +18,7 @@ During the year of 2020, the world went into lock down, many people were forced 
 
 We could see movies being a popular source of entertainment during both the peak of lock down (Spring/Summer 2020) where people watched many movies in their homes and once restrictions were eased and people were allowed to finally congregate in public spaces again.
 
-As the movie and entertainment industry have a large impact on today’s pop culture, we’re intrigued to see how successful certain movies were over the years, especially in 2019 and 2020. We will also be delving into the gross income of a variety of movies in order to find which movie was the most profitable. 
+As the movie and entertainment industry have a large impact on today’s pop culture, we’re intrigued to see how successful certain movies were over the years, especially in 2019 and 2020. We will also be delving into the gross income of a variety of movies in order to find which movie was the most profitable. Comparing the 2019 and 2020 data to determine if the pandemic impacted the total profits for movies.  
 
 Our datasets will be coming from Kaggle: [Movie Industry](https://www.kaggle.com/datasets/danielgrijalvas/movies) and through web scraping on [Box Office Mojo](https://www.boxofficemojo.com/year/2020/). 
 
@@ -268,19 +268,20 @@ world_2020 %>%
 We can see from the plot above that in 2020 the movie revenue for three countries: USA, Canada and China. 
 
 # Statistical Analysis
-Null Hypothesis: There is no difference between 2019 and 2020 total gross
+Null Hypothesis: There is no difference between 2019 and 2020 profit
 
-Alternative Hypothesis: There is a difference between 2019 and 2020 total gross
+Alternative Hypothesis: There is a difference between 2019 and 2020 profit
 
-Reject the Alternative Hypothesis since p-value is greater than .05.
+Reject the Null Hypothesis since p-value is less than .05.
 
 ```{r statistical-analysis}
 # 2019 and 2020 movie gross data
 gross2020 <- movie2020_numeric %>%
-  filter(year == 2020 | year == 2019)
+  filter(year == 2020 | year == 2019) %>%
+  mutate(profit = (total_gross_numeric- budget))
 
 #T Test 
-t.test(total_gross_numeric ~ year, data = gross2020)
+t.test(profit ~ year, data = gross2020)
 
 #Make a copy of the year column
 gross2020$yearchar = gross2020$year 
@@ -288,18 +289,18 @@ gross2020$yearchar = gross2020$year
 gross2020$yearchar <- as.factor(gross2020$yearchar)
 
 #boxplot for horror and action genre
-ggplot(gross2020, aes(yearchar, total_gross_numeric)) +
+ggplot(gross2020, aes(yearchar, profit)) +
   geom_boxplot() +
   labs(
-    title = "Total Gross Income for 2019 and 2020",
+    title = "Movie Profit for 2019 and 2020",
     x = "Years",
-    y = "Total Gross Income")
+    y = "Profit")
 ```
 
 
 # Conclusion
 
-We can see through our analysis that movies had a large impact on views, especially during the pandemic, where it became one of the main source of entertainment.[add more?]
+We can see through our analysis that movies had a large impact on views, especially during the pandemic, where it became one of the main source of entertainment. The pandemic definitely had an impact on the profits in movies in 2020 as they were significantly lower than those in 2019. [add more?]
 
 We did come across a few challenges in the making of this project, one of them being choosing two datasets that have a relationship and can be used in analysis. It took us quite some time to find two datasets, especially since the two datasets could not be from the same source. Despite this difficulty, taking the time to discover and compare multiple datasets helped us think and interpret data in a relational sense.
 
