@@ -22,6 +22,8 @@ As the movie and entertainment industry have a large impact on today’s pop cul
 
 Our datasets will be coming from Kaggle: [Movie Industry](https://www.kaggle.com/datasets/danielgrijalvas/movies) and through web scraping on [Box Office Mojo](https://www.boxofficemojo.com/year/2020/). 
 
+With the Box Office Mojo dataset we had to conduct data transformation to make the data usable as all the data was in one column. In the Kagge Movie dataset we did some cleaning for our analysis. We joined the Box Office Mojo and the Kaggle Movie dataset to find the profitability for both 2019 and 2020 movies. The data was broken down into groupings on genre to determine which genre made the most profit. 
+
 Our team used slack, discord and github in order to collaborate effectively.
 
 # Data Collection
@@ -231,9 +233,33 @@ print(top_5_profitable_2019[, c("name", "budget", "total_gross", "profit")])
 
 From listing the top 5 movies, we can see that Frozen II was the most successful movie in 2019.
 
-# Data Visualization Feature To Create Map
+Another analysis we conducted was:
 
-Our team wanted to visualize the consumption of movies across the world before and after the pandamice 2019 vs 2020. Using ggplot along with the packages loaded below, our team was able to create a map showing total movie revenue by country. To create a map we used dplyr to filter the relevant columns, including the country. We then grouped by country summing the revenue from each movie. We then used the Iso package to find a common code for each country to be easily identifiable. We then used the sf package to load a map and plot the data on. 
+Which genre was the most profitable in 2019 and 2020?
+```{r grouping-on-genre}
+genre2019 <- movie2019_numeric %>%
+  mutate(profit = total_gross_numeric-budget) %>%
+  group_by(genre) %>%
+  summarize(avg_profit = mean(profit)) %>%
+  arrange(desc(avg_profit))
+
+genre2019
+```
+
+Crime and Animation genre movies has the highest profit in 2019. Drama genre movies has the highest profit in 2020
+
+```{r grouping-on-genre2020}
+genre2020 <- movie2020_numeric %>%
+  mutate(profit = total_gross_numeric-budget) %>%
+  group_by(genre) %>%
+  summarize(avg_profit = mean(profit)) %>%
+  arrange(desc(avg_profit))
+
+genre2020
+```
+# Data Visualization New Feature To Create Map
+
+Our team wanted to visualize the consumption of movies across the world before and after the pandemic 2019 vs 2020. Using ggplot along with the packages loaded below, our team was able to create a map showing total movie revenue by country. To create a map we used dplyr to filter the relevant columns, including the country. We then grouped by country summing the revenue from each movie. We then used the Iso package to find a common code for each country to be easily identifiable. We then used the sf package to load a map and plot the data on. 
 
 ```{r}
 #First we create a data frame with the relevent information needed for the map. 
@@ -328,6 +354,8 @@ Alternative Hypothesis: There is a difference between 2019 and 2020 profit
 
 Reject the Null Hypothesis since p-value is less than .05.
 
+Based on the t-test it can be concluded there is a difference between teh 2019 and 2020 profit. 
+
 ```{r statistical-analysis}
 #creating a subset and filter for 2019 and 2020 movies
 movieall <- movie_df %>%
@@ -368,7 +396,7 @@ ggplot(movieall3, aes(yearchar, profit)) +
 
 # Conclusion
 
-We can see through our analysis that movies had a large impact on views, especially during the pandemic, where it became one of the main source of entertainment. The profits in movies in 2020 were significantly lower than those in 2019 due to the pandemic a lot less people went to the movies. 
+We can see through our analysis that movies had a large impact on views, especially during the pandemic, where it became one of the main source of entertainment. The profits in movies in 2020 were significantly lower than those in 2019 due to the pandemic a lot less people went to the movies. Movie genre in Crimes made more profit in 2019 and in 2020 the Drama genre made the most profit. 
 
 We did come across a few challenges in the making of this project, one of them being choosing two datasets that have a relationship and can be used in analysis. It took us quite some time to find two datasets, especially since the two datasets could not be from the same source. Despite this difficulty, taking the time to discover and compare multiple datasets helped us think and interpret data in a relational sense.
 
