@@ -354,7 +354,7 @@ Alternative Hypothesis: There is a difference between 2019 and 2020 profit
 
 Reject the Null Hypothesis since p-value is less than .05.
 
-Based on the t-test it can be concluded there is a difference between teh 2019 and 2020 profit. 
+Based on the t-test it can be concluded there is a difference between the 2019 and 2020 profit. 
 
 ```{r statistical-analysis}
 #creating a subset and filter for 2019 and 2020 movies
