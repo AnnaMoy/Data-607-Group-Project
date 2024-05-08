@@ -22,7 +22,7 @@ As the movie and entertainment industry have a large impact on today’s pop cul
 
 Our datasets will be coming from Kaggle: [Movie Industry](https://www.kaggle.com/datasets/danielgrijalvas/movies) and through web scraping on [Box Office Mojo](https://www.boxofficemojo.com/year/2020/). 
 
-With the Box Office Mojo dataset we had to conduct data transformation to make the data usable as all the data was in one column. In the Kagge Movie dataset we did some cleaning for our analysis. We joined the Box Office Mojo and the Kaggle Movie dataset to find the profitability for both 2019 and 2020 movies. The data was broken down into groupings on genre to determine which genre made the most profit. 
+With the Box Office Mojo dataset we had to conduct data transformation to make the data usable as all the data was in one column. In the Kaggle Movie dataset we did some cleaning for our analysis. We joined the Box Office Mojo and the Kaggle Movie dataset to find the profitability for both 2019 and 2020 movies. The data was broken down into groupings on genre to determine which genre made the most profit. 
 
 Our team used slack, discord and github in order to collaborate effectively.
 
